@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login — EventManager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'web/css/styles.css' %}">
+</head>
+<body>
+
+<div class="login-bg"></div>
+
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-logo">🎉</div>
+    <h1 class="login-title">Welcome back</h1>
+    <p class="login-subtitle">Sign in to manage your events</p>
+
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="form-group">
+        <label class="form-label">{{ field.label }}</label>
+        <input
+          type="{{ field.field.widget.input_type }}"
+          name="{{ field.html_name }}"
+          class="form-control"
+          placeholder="Enter your {{ field.label|lower }}"
+          {% if field.value %}value="{{ field.value }}"{% endif %}
+        >
+        {% if field.errors %}
+          <p class="form-error">{{ field.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="login-btn">Sign In →</button>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>

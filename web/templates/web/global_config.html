@@ -1,0 +1,93 @@
+{% extends 'web/base.html' %}
+{% block title %}Global Configuration{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1 class="section-title">⚙ Global Configuration</h1>
+    <p class="section-subtitle">Manage system-wide settings via the Singleton pattern</p>
+  </div>
+</div>
+
+<div class="singleton-badge">
+  🔵 Singleton Instance Active &nbsp;·&nbsp; <code style="font-size:.75rem;">{{ singleton }}</code>
+</div>
+
+<form method="post">
+  {% csrf_token %}
+  <div class="config-grid">
+
+    <div class="config-card">
+      <span class="config-card-icon">💱</span>
+      <div class="config-card-title">Default Currency</div>
+      <div class="config-card-desc">The currency used across all event calculations</div>
+      <label class="form-label">{{ form.moneda.label }}</label>
+      <input type="text" name="moneda" class="form-control"
+             value="{{ form.moneda.value|default:'USD' }}">
+      {% if form.moneda.errors %}
+        <p class="form-error">{{ form.moneda.errors|join:", " }}</p>
+      {% endif %}
+    </div>
+
+    <div class="config-card">
+      <span class="config-card-icon">🧾</span>
+      <div class="config-card-title">Tax Percentage</div>
+      <div class="config-card-desc">Applied to all event budgets and invoices</div>
+      <label class="form-label">{{ form.porcentaje_impuestos.label }}</label>
+      <input type="number" name="porcentaje_impuestos" class="form-control"
+             step="0.01" value="{{ form.porcentaje_impuestos.value|default:'16.00' }}">
+      {% if form.porcentaje_impuestos.errors %}
+        <p class="form-error">{{ form.porcentaje_impuestos.errors|join:", " }}</p>
+      {% endif %}
+    </div>
+
+    <div class="config-card">
+      <span class="config-card-icon">👥</span>
+      <div class="config-card-title">Attendee Limit</div>
+      <div class="config-card-desc">Maximum attendees allowed per event system-wide</div>
+      <label class="form-label">{{ form.limite_asistentes.label }}</label>
+      <input type="number" name="limite_asistentes" class="form-control"
+             value="{{ form.limite_asistentes.value|default:'5000' }}">
+      {% if form.limite_asistentes.errors %}
+        <p class="form-error">{{ form.limite_asistentes.errors|join:", " }}</p>
+      {% endif %}
+    </div>
+
+    <div class="config-card">
+      <span class="config-card-icon">🔔</span>
+      <div class="config-card-title">Notifications</div>
+      <div class="config-card-desc">Enable or disable system-wide notifications</div>
+      <div class="toggle-group" style="margin-top:.75rem;">
+        <span class="toggle-label">{{ form.notificaciones_activas.label }}</span>
+        <label class="toggle-switch">
+          <input type="checkbox" name="notificaciones_activas"
+            {% if form.notificaciones_activas.value %}checked{% endif %}>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="config-card">
+      <span class="config-card-icon">🛠</span>
+      <div class="config-card-title">Maintenance Mode</div>
+      <div class="config-card-desc">
+        When enabled, the system displays a maintenance notice
+      </div>
+      <div class="toggle-group" style="margin-top:.75rem;">
+        <span class="toggle-label">{{ form.modo_mantenimiento.label }}</span>
+        <label class="toggle-switch">
+          <input type="checkbox" name="modo_mantenimiento"
+            {% if form.modo_mantenimiento.value %}checked{% endif %}>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:2rem;">
+    <button type="submit" class="btn btn-primary">💾 Save Configuration</button>
+  </div>
+</form>
+
+{% endblock %}

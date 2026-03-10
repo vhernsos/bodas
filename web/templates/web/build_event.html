@@ -1,0 +1,300 @@
+{% extends 'web/base.html' %}
+{% block title %}Build Event{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1 class="section-title">🔨 Build Event</h1>
+    <p class="section-subtitle">
+      Use the <strong>Builder Pattern</strong> to construct your event step by step
+    </p>
+  </div>
+</div>
+
+<!-- Step indicator -->
+<div class="step-indicator">
+  <div class="step active">
+    <div class="step-circle">1</div>
+    <span class="step-label">Event Type</span>
+  </div>
+  <div class="step-line"></div>
+  <div class="step active">
+    <div class="step-circle">2</div>
+    <span class="step-label">Configuration</span>
+  </div>
+  <div class="step-line"></div>
+  <div class="step active">
+    <div class="step-circle">3</div>
+    <span class="step-label">Details</span>
+  </div>
+  <div class="step-line"></div>
+  <div class="step active">
+    <div class="step-circle">4</div>
+    <span class="step-label">Services</span>
+  </div>
+</div>
+
+<div class="card card-elevated">
+  <form method="post">
+    {% csrf_token %}
+
+    <!-- Event type -->
+    <div class="form-section-title">🎪 Select Event Type</div>
+    <div class="option-cards" style="margin-bottom:1.5rem;">
+      <div class="option-card"
+           onclick="selectOption(this,'id_tipo_builder','conferencia')">
+        <span class="option-card-icon">🎤</span>
+        <div class="option-card-title">Conference</div>
+        <div class="option-card-desc">
+          Professional conferences with stage, streaming and full tech setup
+        </div>
+      </div>
+      <div class="option-card"
+           onclick="selectOption(this,'id_tipo_builder','boda')">
+        <span class="option-card-icon">💍</span>
+        <div class="option-card-title">Wedding</div>
+        <div class="option-card-desc">
+          Elegant weddings with catering, decoration, lighting and more
+        </div>
+      </div>
+    </div>
+    <div style="display:none;">{{ form.tipo_builder }}</div>
+
+    <!-- Config level -->
+    <div class="form-section-title">⚙ Configuration Level</div>
+    <div class="option-cards">
+
+      <!-- Standard -->
+      <div class="option-card"
+           onclick="selectOption(this,'id_configuracion','estandar')">
+        <span class="option-card-icon">⭐</span>
+        <div class="option-card-title">Standard</div>
+        <div class="option-card-desc">
+          Essential services automatically applied based on event type
+        </div>
+        <div class="option-card-services" id="standard-pills-conf"
+             style="display:none;">
+          <span class="option-service-pill">🎭 Stage</span>
+          <span class="option-service-pill">💡 Lighting</span>
+          <span class="option-service-pill">🔒 Security</span>
+          <span class="option-service-pill">📡 Streaming</span>
+        </div>
+        <div class="option-card-services" id="standard-pills-boda"
+             style="display:none;">
+          <span class="option-service-pill">🍽️ Catering</span>
+          <span class="option-service-pill">🎨 Decoration</span>
+          <span class="option-service-pill">💡 Lighting</span>
+        </div>
+      </div>
+
+      <!-- Complete -->
+      <div class="option-card"
+           onclick="selectOption(this,'id_configuracion','completa')">
+        <span class="option-card-icon">🌟</span>
+        <div class="option-card-title">Complete</div>
+        <div class="option-card-desc">
+          All available services included, orchestrated by the Director
+        </div>
+        <div class="option-card-services" id="complete-pills-conf"
+             style="display:none;">
+          <span class="option-service-pill">🎭 Stage</span>
+          <span class="option-service-pill">💡 Lighting</span>
+          <span class="option-service-pill">🔒 Security</span>
+          <span class="option-service-pill">📡 Streaming</span>
+          <span class="option-service-pill">🍽️ Catering</span>
+          <span class="option-service-pill">🎨 Decoration</span>
+        </div>
+        <div class="option-card-services" id="complete-pills-boda"
+             style="display:none;">
+          <span class="option-service-pill">🍽️ Catering</span>
+          <span class="option-service-pill">🎨 Decoration</span>
+          <span class="option-service-pill">💡 Lighting</span>
+          <span class="option-service-pill">🎭 Stage</span>
+          <span class="option-service-pill">🔒 Security</span>
+          <span class="option-service-pill">📡 Streaming</span>
+        </div>
+      </div>
+
+      <!-- Custom -->
+      <div class="option-card"
+           onclick="selectOption(this,'id_configuracion','personalizada')">
+        <span class="option-card-icon">🎛️</span>
+        <div class="option-card-title">Custom</div>
+        <div class="option-card-desc">
+          Hand-pick exactly which services you want for this event
+        </div>
+        <div class="option-card-services" style="margin-top:.75rem;">
+          <span class="option-service-pill"
+                style="background:rgba(255,107,157,0.1);
+                       color:#ff6b9d;
+                       border-color:rgba(255,107,157,0.3);">
+            ✏️ You choose
+          </span>
+        </div>
+      </div>
+
+    </div>
+    <div style="display:none;">{{ form.configuracion }}</div>
+
+    <div class="divider"></div>
+
+    <!-- Event details -->
+    <div class="form-section-title">📋 Event Details</div>
+    <div class="two-col">
+      <div class="form-group">
+        <label class="form-label">Event Name</label>
+        <input type="text" name="nombre" class="form-control"
+               placeholder="e.g. Annual Tech Summit 2026"
+               value="{{ form.nombre.value|default:'' }}">
+        {% if form.nombre.errors %}
+          <p class="form-error">{{ form.nombre.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Location</label>
+        <input type="text" name="ubicacion" class="form-control"
+               placeholder="e.g. Grand Ballroom, NYC"
+               value="{{ form.ubicacion.value|default:'' }}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Start Date &amp; Time</label>
+        <input type="datetime-local" name="fecha_inicio" class="form-control"
+               value="{{ form.fecha_inicio.value|default:'' }}">
+        {% if form.fecha_inicio.errors %}
+          <p class="form-error">{{ form.fecha_inicio.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+      <div class="form-group">
+        <label class="form-label">End Date &amp; Time</label>
+        <input type="datetime-local" name="fecha_fin" class="form-control"
+               value="{{ form.fecha_fin.value|default:'' }}">
+        {% if form.fecha_fin.errors %}
+          <p class="form-error">{{ form.fecha_fin.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Max Attendees</label>
+        <input type="number" name="max_asistentes" class="form-control"
+               value="{{ form.max_asistentes.value|default:'100' }}" min="1">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea name="descripcion" class="form-control" rows="3"
+                placeholder="Brief description of the event...">{{ form.descripcion.value|default:'' }}</textarea>
+    </div>
+
+    <!-- Custom services panel -->
+    <div id="custom-services" style="display:none;">
+      <div class="form-section-title">🛠 Custom Services</div>
+      <div style="display:grid;
+                  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+                  gap:.75rem;">
+        {% for field in form %}
+          {% if field.field.widget.input_type == 'checkbox' %}
+          <div class="toggle-group">
+            <span class="toggle-label">{{ field.label }}</span>
+            <label class="toggle-switch">
+              <input type="checkbox" name="{{ field.html_name }}"
+                {% if field.value %}checked{% endif %}>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div style="display:flex;gap:1rem;">
+      <button type="submit" class="btn btn-primary">
+        🔨 Build &amp; Save Event
+      </button>
+      <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+
+  </form>
+</div>
+
+<style>
+  .card .form-control,
+  .card input[type="text"],
+  .card input[type="number"],
+  .card input[type="datetime-local"],
+  .card select,
+  .card textarea {
+    background: #f0f4ff;
+    border: 2px solid rgba(91,94,244,0.15);
+    border-radius: 10px;
+    color: #1e1e2e;
+    font-family: 'Poppins', sans-serif;
+    font-size: .92rem;
+    padding: .65rem 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all .3s ease;
+  }
+  .card input:focus,
+  .card select:focus,
+  .card textarea:focus {
+    outline: none;
+    border-color: #5b5ef4;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(91,94,244,0.12);
+  }
+</style>
+
+<script>
+let currentType = '';
+
+function selectOption(el, fieldId, value) {
+  el.closest('.option-cards')
+    .querySelectorAll('.option-card')
+    .forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+
+  const sel = document.getElementById(fieldId);
+  if (sel) sel.value = value;
+
+  if (fieldId === 'id_tipo_builder') {
+    currentType = value;
+    updateServicePills();
+  }
+
+  if (fieldId === 'id_configuracion') {
+    document.getElementById('custom-services').style.display =
+      value === 'personalizada' ? 'block' : 'none';
+    updateServicePills();
+  }
+}
+
+function updateServicePills() {
+  ['standard-pills-conf', 'standard-pills-boda',
+   'complete-pills-conf', 'complete-pills-boda']
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+
+  const configSel = document.getElementById('id_configuracion');
+  if (!configSel) return;
+  const configVal = configSel.value;
+
+  if (configVal === 'estandar') {
+    const id = currentType === 'conferencia'
+      ? 'standard-pills-conf'
+      : 'standard-pills-boda';
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'flex';
+  } else if (configVal === 'completa') {
+    const id = currentType === 'conferencia'
+      ? 'complete-pills-conf'
+      : 'complete-pills-boda';
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'flex';
+  }
+}
+</script>
+
+{% endblock %}

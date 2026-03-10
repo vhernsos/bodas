@@ -1,0 +1,92 @@
+{% extends 'web/base.html' %}
+{% block title %}Clone Event{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <div class="prototype-badge">🧬 Prototype Pattern</div>
+    <h1 class="section-title">Clone Event</h1>
+    <p class="section-subtitle">
+      A deep copy of the original event will be created. The original will not be modified.
+    </p>
+  </div>
+</div>
+
+<div class="clone-grid">
+  <!-- Original event info -->
+  <div>
+    <div class="original-card">
+      <div class="original-card-label">🔒 Original Event (read-only)</div>
+      <h2 class="original-card-title">{{ original.nombre }}</h2>
+      {% if original.tipo %}
+      <span class="badge badge-blue">{{ original.tipo }}</span>
+      {% endif %}
+      <div class="original-card-meta">
+        <div class="event-meta-item">📅 {{ original.fecha_inicio|date:"M d, Y · H:i" }}</div>
+        <div class="event-meta-item">🏁 {{ original.fecha_fin|date:"M d, Y · H:i" }}</div>
+        {% if original.ubicacion %}
+        <div class="event-meta-item">📍 {{ original.ubicacion }}</div>
+        {% endif %}
+        <div class="event-meta-item">👥 {{ original.max_asistentes }} max attendees</div>
+        <div class="event-meta-item">👤 {{ original.organizador.username }}</div>
+      </div>
+    </div>
+
+    {% if original.configuracion %}
+    <div class="card" style="margin-top:1rem;border-color:rgba(16,185,129,0.2);">
+      <h4 style="font-size:.85rem;color:var(--green);margin-bottom:.75rem;
+                 text-transform:uppercase;letter-spacing:.5px;">
+        Services included in clone
+      </h4>
+      {% with c=original.configuracion %}
+      <div style="display:flex;flex-wrap:wrap;gap:.4rem;">
+        {% if c.tiene_catering   %}<span class="badge badge-green">🍽️ Catering</span>{% endif %}
+        {% if c.tiene_escenario  %}<span class="badge badge-green">🎭 Stage</span>{% endif %}
+        {% if c.tiene_iluminacion %}<span class="badge badge-green">💡 Lighting</span>{% endif %}
+        {% if c.tiene_seguridad  %}<span class="badge badge-green">🔒 Security</span>{% endif %}
+        {% if c.tiene_streaming  %}<span class="badge badge-green">📡 Streaming</span>{% endif %}
+        {% if c.tiene_decoracion %}<span class="badge badge-green">🎨 Decoration</span>{% endif %}
+      </div>
+      {% endwith %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Clone form -->
+  <div class="card card-elevated">
+    <h3 style="margin-bottom:1.5rem;font-size:1rem;color:var(--green);">
+      ✏️ Customize Your Clone
+    </h3>
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="form-group">
+        <label class="form-label">{{ field.label }}</label>
+        {% if field.field.widget.input_type == 'textarea' %}
+          <textarea name="{{ field.html_name }}" class="form-control" rows="3">
+            {{- field.value|default:'' -}}
+          </textarea>
+        {% else %}
+          <input
+            type="{{ field.field.widget.input_type }}"
+            name="{{ field.html_name }}"
+            class="form-control"
+            {% if field.value %}value="{{ field.value }}"{% endif %}
+          >
+        {% endif %}
+        {% if field.errors %}
+          <p class="form-error">{{ field.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      <div class="divider"></div>
+      <div style="display:flex;gap:1rem;">
+        <button type="submit" class="btn btn-success">🧬 Create Clone</button>
+        <a href="{% url 'event_detail' original.pk %}" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends 'web/base.html' %}
+{% block title %}Dashboard — EventManager{% endblock %}
+{% block content %}
+
+<!-- Hero -->
+<div class="hero-banner">
+  <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1920&q=80"
+       alt="Events hero">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1 class="hero-title">Your Events</h1>
+    <p class="hero-subtitle">Manage, build and clone your events all in one place</p>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-bar">
+  <div class="stat-card">
+    <div class="stat-number">{{ eventos.count }}</div>
+    <div class="stat-label">Total Events</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">{{ eventos|length }}</div>
+    <div class="stat-label">Showing Now</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">{{ tipos.count }}</div>
+    <div class="stat-label">Event Types</div>
+  </div>
+</div>
+
+<!-- Page header -->
+<div class="page-header">
+  <div>
+    <h2 class="section-title">All Events</h2>
+    <p class="section-subtitle">Filter, view and manage your event portfolio</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{% url 'event_create' %}" class="btn btn-secondary">＋ New Event</a>
+    <a href="{% url 'build_event' %}" class="btn btn-primary">🔨 Build Event</a>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="filter-bar">
+  <form method="get" style="display:contents;">
+    <div class="filter-group">
+      <span class="filter-label">Type</span>
+      <select name="tipo" class="form-control" style="min-width:140px;">
+        <option value="">All types</option>
+        {% for t in tipos %}
+        <option value="{{ t.pk }}"
+          {% if request.GET.tipo == t.pk|stringformat:"s" %}selected{% endif %}>
+          {{ t.nombre }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Date</span>
+      <input type="date" name="fecha" class="form-control"
+             value="{{ request.GET.fecha }}" style="min-width:160px;">
+    </div>
+    <button type="submit" class="btn btn-secondary" style="align-self:flex-end;">
+      🔍 Filter
+    </button>
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary" style="align-self:flex-end;">
+      ✕ Clear
+    </a>
+  </form>
+</div>
+
+<!-- Events grid -->
+{% if eventos %}
+<div class="events-grid">
+  {% for e in eventos %}
+  <div class="event-card">
+    <div class="event-card-header">
+      <div>
+        <a href="{% url 'event_detail' e.pk %}" class="event-card-title">{{ e.nombre }}</a>
+        <div style="margin-top:.4rem;display:flex;gap:.4rem;flex-wrap:wrap;">
+          {% if e.tipo %}
+          <span class="badge badge-blue">{{ e.tipo }}</span>
+          {% endif %}
+          {% if e.es_clon %}
+          <span class="badge badge-purple">🔁 Clone</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="event-card-meta">
+      <div class="event-meta-item">
+        📅 {{ e.fecha_inicio|date:"M d, Y · H:i" }}
+      </div>
+      {% if e.ubicacion %}
+      <div class="event-meta-item">
+        📍 {{ e.ubicacion }}
+      </div>
+      {% endif %}
+      <div class="organizer-chip">
+        <div class="organizer-avatar">{{ e.organizador.username|first }}</div>
+        {{ e.organizador.username }}
+      </div>
+    </div>
+
+    <div class="event-card-actions">
+      <a href="{% url 'event_detail' e.pk %}"  class="btn btn-secondary btn-sm">👁 View</a>
+      <a href="{% url 'event_update' e.pk %}"  class="btn btn-warning btn-sm">✏️ Edit</a>
+      <a href="{% url 'clone_event' e.pk %}"   class="btn btn-success btn-sm">🔁 Clone</a>
+      <a href="{% url 'event_delete' e.pk %}"  class="btn btn-danger btn-sm">🗑</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="empty-state">
+  <span class="empty-state-icon">📭</span>
+  <p class="empty-state-text">No events found matching your filters.</p>
+  <div style="display:flex;gap:1rem;justify-content:center;">
+    <a href="{% url 'event_create' %}" class="btn btn-secondary">Create one manually</a>
+    <a href="{% url 'build_event' %}"  class="btn btn-primary">Build with Builder</a>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
