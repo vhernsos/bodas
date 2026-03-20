@@ -512,7 +512,7 @@ function selectOption(el, fieldId, value) {
   if (fieldId === 'id_configuracion') {
     document.getElementById('custom-services').style.display =
       value === 'personalizada' ? 'block' : 'none';
-    if (value !== 'personalizada') activateSteps([2,3,4]);
+    activateSteps([2,3,4]);
     updateServicePills();
   }
 }
@@ -615,15 +615,6 @@ function submitClone() {
   if (!fechaFin)          { alert('Please enter an end date.'); return; }
 
   // Map checkbox IDs to form field names
-  const serviceMap = {
-    catering:   'catering',
-    escenario:  'escenario',
-    iluminacion:'iluminacion',
-    seguridad:  'seguridad',
-    streaming:  'streaming',
-    decoracion: 'decoracion',
-  };
-
   document.getElementById('fs-source-event-id').value  = selectedSourceId;
   document.getElementById('fs-nombre').value           = nombre;
   document.getElementById('fs-fecha-inicio').value     = fechaInicio;

@@ -1,8 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
+import json
 
-from .models import Evento, TipoEvento, ConfiguracionEvento, GlobalConfig
+from .models import Evento, TipoEvento, ConfiguracionEvento, GlobalConfig, Ubicacion
 from .forms import (
     EventoForm, ConfiguracionEventoForm, GlobalConfigForm,
     BuildEventoForm, CloneEventoForm,
@@ -121,9 +122,6 @@ def event_delete(request, pk):
 # ── Builder ──────────────────────────────────────────────────────────────────
 @login_required
 def build_event(request):
-    import json
-    from .models import TipoEvento, Ubicacion
-
     all_events = Evento.objects.select_related(
         'tipo', 'ubicacion'
     ).prefetch_related('configuracion').order_by('-creado_en')
