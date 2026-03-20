@@ -152,6 +152,56 @@ class EventoBodaBuilder(EventoBuilder):
         )
 
 
+class EventoConcertBuilder(EventoBuilder):
+    """Concrete builder for concerts."""
+
+    def __init__(self):
+        super().__init__()
+        self._evento.tipo = 'Concierto'
+
+    def configuracion_estandar(self) -> 'EventoConcertBuilder':
+        return (
+            self
+            .agregar_escenario()
+            .agregar_iluminacion()
+            .agregar_seguridad()
+            .agregar_streaming()
+        )
+
+    def configuracion_completa(self) -> 'EventoConcertBuilder':
+        return (
+            self
+            .configuracion_estandar()
+            .agregar_catering()
+            .agregar_decoracion()
+        )
+
+
+class EventoTheatreBuilder(EventoBuilder):
+    """Concrete builder for theatre events."""
+
+    def __init__(self):
+        super().__init__()
+        self._evento.tipo = 'Teatro'
+
+    def configuracion_estandar(self) -> 'EventoTheatreBuilder':
+        return (
+            self
+            .agregar_escenario()
+            .agregar_iluminacion()
+            .agregar_seguridad()
+        )
+
+    def configuracion_completa(self) -> 'EventoTheatreBuilder':
+        return (
+            self
+            .configuracion_estandar()
+            .agregar_catering()
+            .agregar_decoracion()
+            .agregar_streaming()
+        )
+
+
 class DirectorEvento:
     """Orchestrates building using any EventoBuilder."""
 
