@@ -42,20 +42,28 @@ class GlobalConfigForm(forms.ModelForm):
 
 
 class BuildEventoForm(forms.Form):
+    MODE_CHOICES = [
+        ('from_scratch', 'Build from Scratch'),
+        ('from_clone',   'Clone from Existing'),
+    ]
     TIPO_CHOICES = [
         ('conferencia', 'Conference'),
-        ('boda', 'Wedding'),
+        ('boda',        'Wedding'),
+        ('concierto',   'Concert'),
+        ('teatro',      'Theatre'),
     ]
     CONFIG_CHOICES = [
         ('estandar',    'Standard'),
         ('completa',    'Complete'),
         ('personalizada', 'Custom'),
     ]
-    nombre        = forms.CharField(max_length=200)
-    tipo_builder  = forms.ChoiceField(choices=TIPO_CHOICES)
-    configuracion = forms.ChoiceField(choices=CONFIG_CHOICES)
-    ubicacion     = forms.CharField(max_length=200, required=False)
-    fecha_inicio  = forms.DateTimeField(
+    build_mode      = forms.ChoiceField(choices=MODE_CHOICES, initial='from_scratch')
+    source_event_id = forms.IntegerField(required=False)
+    nombre          = forms.CharField(max_length=200)
+    tipo_builder    = forms.ChoiceField(choices=TIPO_CHOICES, required=False)
+    configuracion   = forms.ChoiceField(choices=CONFIG_CHOICES, required=False)
+    ubicacion       = forms.CharField(max_length=200, required=False)
+    fecha_inicio    = forms.DateTimeField(
         widget=forms.DateTimeInput(attrs={'type': 'datetime-local'})
     )
     fecha_fin = forms.DateTimeField(
@@ -71,6 +79,19 @@ class BuildEventoForm(forms.Form):
     tiene_seguridad  = forms.BooleanField(required=False)
     tiene_streaming  = forms.BooleanField(required=False)
     tiene_decoracion = forms.BooleanField(required=False)
+
+    def clean(self):
+        cleaned = super().clean()
+        mode = cleaned.get('build_mode')
+        if mode == 'from_scratch':
+            if not cleaned.get('tipo_builder'):
+                self.add_error('tipo_builder', 'Please select an event type.')
+            if not cleaned.get('configuracion'):
+                self.add_error('configuracion', 'Please select a configuration level.')
+        elif mode == 'from_clone':
+            if not cleaned.get('source_event_id'):
+                self.add_error('source_event_id', 'Please select a source event to clone.')
+        return cleaned
 
 
 class CloneEventoForm(forms.Form):

@@ -9,7 +9,7 @@
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <h1 class="hero-title">Your Events</h1>
-    <p class="hero-subtitle">Manage, build and clone your events all in one place</p>
+    <p class="hero-subtitle">Manage and build your events all in one place</p>
   </div>
 </div>
 
@@ -107,7 +107,6 @@
     <div class="event-card-actions">
       <a href="{% url 'event_detail' e.pk %}"  class="btn btn-secondary btn-sm">👁 View</a>
       <a href="{% url 'event_update' e.pk %}"  class="btn btn-warning btn-sm">✏️ Edit</a>
-      <a href="{% url 'clone_event' e.pk %}"   class="btn btn-success btn-sm">🔁 Clone</a>
       <a href="{% url 'event_delete' e.pk %}"  class="btn btn-danger btn-sm">🗑</a>
     </div>
   </div>

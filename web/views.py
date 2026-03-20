@@ -1,15 +1,17 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
+import json
 
-from .models import Evento, TipoEvento, ConfiguracionEvento, GlobalConfig
+from .models import Evento, TipoEvento, ConfiguracionEvento, GlobalConfig, Ubicacion
 from .forms import (
     EventoForm, ConfiguracionEventoForm, GlobalConfigForm,
     BuildEventoForm, CloneEventoForm,
 )
 from .patterns.singleton import ConfiguracionGlobal
 from .patterns.builder import (
-    EventoConferenciaBuilder, EventoBodaBuilder, DirectorEvento,
+    EventoConferenciaBuilder, EventoBodaBuilder,
+    EventoConcertBuilder, EventoTheatreBuilder, DirectorEvento,
 )
 from .patterns.prototype import EventoPrototype
 
@@ -120,19 +122,81 @@ def event_delete(request, pk):
 # ── Builder ──────────────────────────────────────────────────────────────────
 @login_required
 def build_event(request):
+    all_events = Evento.objects.select_related(
+        'tipo', 'ubicacion'
+    ).prefetch_related('configuracion').order_by('-creado_en')
+
+    # Serialize event data for JavaScript (clone source selection)
+    events_json = []
+    for ev in all_events:
+        cfg = {}
+        if hasattr(ev, 'configuracion'):
+            c = ev.configuracion
+            cfg = {
+                'tiene_catering':    c.tiene_catering,
+                'tiene_escenario':   c.tiene_escenario,
+                'tiene_iluminacion': c.tiene_iluminacion,
+                'tiene_seguridad':   c.tiene_seguridad,
+                'tiene_streaming':   c.tiene_streaming,
+                'tiene_decoracion':  c.tiene_decoracion,
+            }
+        events_json.append({
+            'id':           ev.pk,
+            'nombre':       ev.nombre,
+            'tipo':         str(ev.tipo) if ev.tipo else '—',
+            'fecha_inicio': ev.fecha_inicio.strftime('%b %d, %Y') if ev.fecha_inicio else '',
+            'ubicacion':    str(ev.ubicacion) if ev.ubicacion else '',
+            'config':       cfg,
+        })
+
     if request.method == 'POST':
         form = BuildEventoForm(request.POST)
         if form.is_valid():
-            data          = form.cleaned_data
+            data       = form.cleaned_data
+            build_mode = data['build_mode']
+
+            # ── Clone Mode ───────────────────────────────────────────────────
+            if build_mode == 'from_clone':
+                original  = get_object_or_404(Evento, pk=data['source_event_id'])
+                prototype = EventoPrototype(original)
+                clone     = prototype.clonar()
+
+                clone.set_nombre(data['nombre'])
+                clone.set_fechas(data['fecha_inicio'], data['fecha_fin'])
+                clone.set_max_asistentes(data['max_asistentes'])
+                clone.set_descripcion(data.get('descripcion', ''))
+
+                clone.config = {
+                    'tiene_catering':    data.get('tiene_catering', False),
+                    'tiene_escenario':   data.get('tiene_escenario', False),
+                    'tiene_iluminacion': data.get('tiene_iluminacion', False),
+                    'tiene_seguridad':   data.get('tiene_seguridad', False),
+                    'tiene_streaming':   data.get('tiene_streaming', False),
+                    'tiene_decoracion':  data.get('tiene_decoracion', False),
+                    'notas_adicionales': prototype.config.get('notas_adicionales', ''),
+                }
+
+                nuevo_evento = clone.save_to_db(request.user)
+                nuevo_evento.evento_original = original
+                nuevo_evento.save()
+                messages.success(
+                    request,
+                    f'Event cloned successfully as "{nuevo_evento.nombre}".'
+                )
+                return redirect('event_detail', pk=nuevo_evento.pk)
+
+            # ── Scratch Mode ─────────────────────────────────────────────────
             tipo_builder  = data['tipo_builder']
             configuracion = data['configuracion']
 
-            builder = (
-                EventoConferenciaBuilder()
-                if tipo_builder == 'conferencia'
-                else EventoBodaBuilder()
-            )
-            director  = DirectorEvento(builder)
+            builder_map = {
+                'conferencia': EventoConferenciaBuilder,
+                'boda':        EventoBodaBuilder,
+                'concierto':   EventoConcertBuilder,
+                'teatro':      EventoTheatreBuilder,
+            }
+            builder  = builder_map.get(tipo_builder, EventoConferenciaBuilder)()
+            director = DirectorEvento(builder)
             inicio_str = data['fecha_inicio'].strftime('%Y-%m-%d %H:%M')
             fin_str    = data['fecha_fin'].strftime('%Y-%m-%d %H:%M')
 
@@ -145,16 +209,13 @@ def build_event(request):
                 evento_data = builder.build()
 
             elif configuracion == 'completa':
-                if tipo_builder == 'conferencia':
-                    evento_data = director.construir_conferencia_completa(
-                        data['nombre'], data.get('ubicacion', ''),
-                        inicio_str, fin_str, data['max_asistentes'],
-                    )
-                else:
-                    evento_data = director.construir_boda_sin_streaming(
-                        data['nombre'], data.get('ubicacion', ''),
-                        inicio_str, fin_str, data['max_asistentes'],
-                    )
+                builder.set_nombre(data['nombre'])
+                builder.set_ubicacion(data.get('ubicacion', ''))
+                builder.set_fechas(inicio_str, fin_str)
+                builder.set_max_asistentes(data['max_asistentes'])
+                builder.configuracion_completa()
+                evento_data = builder.build()
+
             else:  # custom
                 builder.set_nombre(data['nombre'])
                 builder.set_ubicacion(data.get('ubicacion', ''))
@@ -170,7 +231,6 @@ def build_event(request):
                 evento_data = builder.build()
 
             # ── Persist to DB ────────────────────────────────────────────────
-            from .models import TipoEvento, Ubicacion
             tipo_obj, _ = TipoEvento.objects.get_or_create(nombre=evento_data.tipo)
             ubicacion_obj = None
             if evento_data.ubicacion:
@@ -190,19 +250,32 @@ def build_event(request):
                 organizador    = request.user,
             )
             ConfiguracionEvento.objects.create(
-                evento           = evento,
-                tiene_catering   = evento_data.tiene_catering,
-                tiene_escenario  = evento_data.tiene_escenario,
+                evento            = evento,
+                tiene_catering    = evento_data.tiene_catering,
+                tiene_escenario   = evento_data.tiene_escenario,
                 tiene_iluminacion = evento_data.tiene_iluminacion,
-                tiene_seguridad  = evento_data.tiene_seguridad,
-                tiene_streaming  = evento_data.tiene_streaming,
-                tiene_decoracion = evento_data.tiene_decoracion,
+                tiene_seguridad   = evento_data.tiene_seguridad,
+                tiene_streaming   = evento_data.tiene_streaming,
+                tiene_decoracion  = evento_data.tiene_decoracion,
             )
             messages.success(request, f'Event "{evento.nombre}" built successfully.')
             return redirect('event_detail', pk=evento.pk)
     else:
         form = BuildEventoForm()
-    return render(request, 'web/build_event.html', {'form': form})
+
+    return render(request, 'web/build_event.html', {
+        'form':          form,
+        'all_events':    all_events,
+        'events_json':   json.dumps(events_json),
+        'services_list': [
+            ('Catering',   '🍽️', 'catering'),
+            ('Stage',      '🎭', 'escenario'),
+            ('Lighting',   '💡', 'iluminacion'),
+            ('Security',   '🔒', 'seguridad'),
+            ('Streaming',  '📡', 'streaming'),
+            ('Decoration', '🎨', 'decoracion'),
+        ],
+    })
 
 
 # ── Prototype / Clone ─────────────────────────────────────────────────────────

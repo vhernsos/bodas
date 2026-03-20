@@ -12,240 +12,488 @@
 </div>
 
 <!-- Step indicator -->
-<div class="step-indicator">
-  <div class="step active">
+<div class="step-indicator" id="step-indicator">
+  <div class="step active" id="ind-0">
+    <div class="step-circle">0</div>
+    <span class="step-label">Mode</span>
+  </div>
+  <div class="step-line"></div>
+  <div class="step" id="ind-1">
     <div class="step-circle">1</div>
-    <span class="step-label">Event Type</span>
+    <span class="step-label" id="ind-1-label">Type</span>
   </div>
   <div class="step-line"></div>
-  <div class="step active">
+  <div class="step" id="ind-2">
     <div class="step-circle">2</div>
-    <span class="step-label">Configuration</span>
+    <span class="step-label" id="ind-2-label">Config</span>
   </div>
   <div class="step-line"></div>
-  <div class="step active">
+  <div class="step" id="ind-3">
     <div class="step-circle">3</div>
     <span class="step-label">Details</span>
   </div>
   <div class="step-line"></div>
-  <div class="step active">
+  <div class="step" id="ind-4">
     <div class="step-circle">4</div>
     <span class="step-label">Services</span>
   </div>
 </div>
 
 <div class="card card-elevated">
-  <form method="post">
+  <form method="post" id="build-form">
     {% csrf_token %}
-
-    <!-- Event type -->
-    <div class="form-section-title">🎪 Select Event Type</div>
-    <div class="option-cards" style="margin-bottom:1.5rem;">
-      <div class="option-card"
-           onclick="selectOption(this,'id_tipo_builder','conferencia')">
-        <span class="option-card-icon">🎤</span>
-        <div class="option-card-title">Conference</div>
-        <div class="option-card-desc">
-          Professional conferences with stage, streaming and full tech setup
-        </div>
-      </div>
-      <div class="option-card"
-           onclick="selectOption(this,'id_tipo_builder','boda')">
-        <span class="option-card-icon">💍</span>
-        <div class="option-card-title">Wedding</div>
-        <div class="option-card-desc">
-          Elegant weddings with catering, decoration, lighting and more
-        </div>
-      </div>
-    </div>
-    <div style="display:none;">{{ form.tipo_builder }}</div>
-
-    <!-- Config level -->
-    <div class="form-section-title">⚙ Configuration Level</div>
-    <div class="option-cards">
-
-      <!-- Standard -->
-      <div class="option-card"
-           onclick="selectOption(this,'id_configuracion','estandar')">
-        <span class="option-card-icon">⭐</span>
-        <div class="option-card-title">Standard</div>
-        <div class="option-card-desc">
-          Essential services automatically applied based on event type
-        </div>
-        <div class="option-card-services" id="standard-pills-conf"
-             style="display:none;">
-          <span class="option-service-pill">🎭 Stage</span>
-          <span class="option-service-pill">💡 Lighting</span>
-          <span class="option-service-pill">🔒 Security</span>
-          <span class="option-service-pill">📡 Streaming</span>
-        </div>
-        <div class="option-card-services" id="standard-pills-boda"
-             style="display:none;">
-          <span class="option-service-pill">🍽️ Catering</span>
-          <span class="option-service-pill">🎨 Decoration</span>
-          <span class="option-service-pill">💡 Lighting</span>
-        </div>
-      </div>
-
-      <!-- Complete -->
-      <div class="option-card"
-           onclick="selectOption(this,'id_configuracion','completa')">
-        <span class="option-card-icon">🌟</span>
-        <div class="option-card-title">Complete</div>
-        <div class="option-card-desc">
-          All available services included, orchestrated by the Director
-        </div>
-        <div class="option-card-services" id="complete-pills-conf"
-             style="display:none;">
-          <span class="option-service-pill">🎭 Stage</span>
-          <span class="option-service-pill">💡 Lighting</span>
-          <span class="option-service-pill">🔒 Security</span>
-          <span class="option-service-pill">📡 Streaming</span>
-          <span class="option-service-pill">🍽️ Catering</span>
-          <span class="option-service-pill">🎨 Decoration</span>
-        </div>
-        <div class="option-card-services" id="complete-pills-boda"
-             style="display:none;">
-          <span class="option-service-pill">🍽️ Catering</span>
-          <span class="option-service-pill">🎨 Decoration</span>
-          <span class="option-service-pill">💡 Lighting</span>
-          <span class="option-service-pill">🎭 Stage</span>
-          <span class="option-service-pill">🔒 Security</span>
-          <span class="option-service-pill">📡 Streaming</span>
-        </div>
-      </div>
-
-      <!-- Custom -->
-      <div class="option-card"
-           onclick="selectOption(this,'id_configuracion','personalizada')">
-        <span class="option-card-icon">🎛️</span>
-        <div class="option-card-title">Custom</div>
-        <div class="option-card-desc">
-          Hand-pick exactly which services you want for this event
-        </div>
-        <div class="option-card-services" style="margin-top:.75rem;">
-          <span class="option-service-pill"
-                style="background:rgba(255,107,157,0.1);
-                       color:#ff6b9d;
-                       border-color:rgba(255,107,157,0.3);">
-            ✏️ You choose
-          </span>
-        </div>
-      </div>
-
-    </div>
-    <div style="display:none;">{{ form.configuracion }}</div>
-
-    <div class="divider"></div>
-
-    <!-- Event details -->
-    <div class="form-section-title">📋 Event Details</div>
-    <div class="two-col">
-      <div class="form-group">
-        <label class="form-label">Event Name</label>
-        <input type="text" name="nombre" class="form-control"
-               placeholder="e.g. Annual Tech Summit 2026"
-               value="{{ form.nombre.value|default:'' }}">
-        {% if form.nombre.errors %}
-          <p class="form-error">{{ form.nombre.errors|join:", " }}</p>
-        {% endif %}
-      </div>
-      <div class="form-group">
-        <label class="form-label">Location</label>
-        <input type="text" name="ubicacion" class="form-control"
-               placeholder="e.g. Grand Ballroom, NYC"
-               value="{{ form.ubicacion.value|default:'' }}">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Start Date &amp; Time</label>
-        <input type="datetime-local" name="fecha_inicio" class="form-control"
-               value="{{ form.fecha_inicio.value|default:'' }}">
-        {% if form.fecha_inicio.errors %}
-          <p class="form-error">{{ form.fecha_inicio.errors|join:", " }}</p>
-        {% endif %}
-      </div>
-      <div class="form-group">
-        <label class="form-label">End Date &amp; Time</label>
-        <input type="datetime-local" name="fecha_fin" class="form-control"
-               value="{{ form.fecha_fin.value|default:'' }}">
-        {% if form.fecha_fin.errors %}
-          <p class="form-error">{{ form.fecha_fin.errors|join:", " }}</p>
-        {% endif %}
-      </div>
-      <div class="form-group">
-        <label class="form-label">Max Attendees</label>
-        <input type="number" name="max_asistentes" class="form-control"
-               value="{{ form.max_asistentes.value|default:'100' }}" min="1">
-      </div>
+    <!-- Hidden fields -->
+    <input type="hidden" name="build_mode"      id="build_mode"      value="from_scratch">
+    <input type="hidden" name="source_event_id" id="source_event_id" value="">
+    <div style="display:none;">
+      {{ form.tipo_builder }}
+      {{ form.configuracion }}
     </div>
 
-    <div class="form-group">
-      <label class="form-label">Description</label>
-      <textarea name="descripcion" class="form-control" rows="3"
-                placeholder="Brief description of the event...">{{ form.descripcion.value|default:'' }}</textarea>
-    </div>
+    <!-- ════════════════════════════════════════════════════════════
+         STEP 0 — Mode Selection
+    ════════════════════════════════════════════════════════════ -->
+    <div id="step-mode">
+      <div class="form-section-title">🚀 How would you like to create this event?</div>
+      <div class="option-cards" style="margin-bottom:1.5rem;">
 
-    <!-- Custom services panel -->
-    <div id="custom-services" style="display:none;">
-      <div class="form-section-title">🛠 Custom Services</div>
-      <div style="display:grid;
-                  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-                  gap:.75rem;">
-        {% for field in form %}
-          {% if field.field.widget.input_type == 'checkbox' %}
-          <div class="toggle-group">
-            <span class="toggle-label">{{ field.label }}</span>
-            <label class="toggle-switch">
-              <input type="checkbox" name="{{ field.html_name }}"
-                {% if field.value %}checked{% endif %}>
-              <span class="toggle-slider"></span>
-            </label>
+        <div class="option-card mode-card"
+             onclick="selectMode(this, 'from_scratch')">
+          <span class="option-card-icon">🔨</span>
+          <div class="option-card-title">Build from Scratch</div>
+          <div class="option-card-desc">
+            Choose an event type and configure all services step by step using the Builder Pattern
           </div>
-          {% endif %}
-        {% endfor %}
+        </div>
+
+        <div class="option-card mode-card"
+             onclick="selectMode(this, 'from_clone')">
+          <span class="option-card-icon">🧬</span>
+          <div class="option-card-title">Clone from Existing</div>
+          <div class="option-card-desc">
+            Select an existing event as a template and customise its services using the Prototype Pattern
+          </div>
+        </div>
+
       </div>
     </div>
 
-    <div class="divider"></div>
-    <div style="display:flex;gap:1rem;">
-      <button type="submit" class="btn btn-primary">
-        🔨 Build &amp; Save Event
-      </button>
-      <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
-    </div>
+    <!-- ════════════════════════════════════════════════════════════
+         SCRATCH FLOW
+    ════════════════════════════════════════════════════════════ -->
+    <div id="scratch-flow" style="display:none;">
+
+      <!-- Event type -->
+      <div class="form-section-title">🎪 Select Event Type</div>
+      <div class="option-cards" style="margin-bottom:1.5rem;">
+
+        <div class="option-card type-card"
+             onclick="selectOption(this,'id_tipo_builder','conferencia')">
+          <span class="option-card-icon">🎤</span>
+          <div class="option-card-title">Conference</div>
+          <div class="option-card-desc">Professional conferences with stage, streaming and full tech setup</div>
+        </div>
+
+        <div class="option-card type-card"
+             onclick="selectOption(this,'id_tipo_builder','boda')">
+          <span class="option-card-icon">💍</span>
+          <div class="option-card-title">Wedding</div>
+          <div class="option-card-desc">Elegant weddings with catering, decoration, lighting and more</div>
+        </div>
+
+        <div class="option-card type-card"
+             onclick="selectOption(this,'id_tipo_builder','concierto')">
+          <span class="option-card-icon">🎵</span>
+          <div class="option-card-title">Concert</div>
+          <div class="option-card-desc">Live music events with stage, lighting, security and streaming</div>
+        </div>
+
+        <div class="option-card type-card"
+             onclick="selectOption(this,'id_tipo_builder','teatro')">
+          <span class="option-card-icon">🎭</span>
+          <div class="option-card-title">Theatre</div>
+          <div class="option-card-desc">Theatrical performances with professional stage and lighting setup</div>
+        </div>
+
+      </div>
+
+      <!-- Config level -->
+      <div class="form-section-title">⚙ Configuration Level</div>
+      <div class="option-cards">
+
+        <!-- Standard -->
+        <div class="option-card config-card"
+             onclick="selectOption(this,'id_configuracion','estandar')">
+          <span class="option-card-icon">⭐</span>
+          <div class="option-card-title">Standard</div>
+          <div class="option-card-desc">Essential services automatically applied based on event type</div>
+          <div class="option-card-services" id="standard-pills-conf"  style="display:none;">
+            <span class="option-service-pill">🎭 Stage</span>
+            <span class="option-service-pill">💡 Lighting</span>
+            <span class="option-service-pill">🔒 Security</span>
+            <span class="option-service-pill">📡 Streaming</span>
+          </div>
+          <div class="option-card-services" id="standard-pills-boda"  style="display:none;">
+            <span class="option-service-pill">🍽️ Catering</span>
+            <span class="option-service-pill">🎨 Decoration</span>
+            <span class="option-service-pill">💡 Lighting</span>
+          </div>
+          <div class="option-card-services" id="standard-pills-concierto" style="display:none;">
+            <span class="option-service-pill">🎭 Stage</span>
+            <span class="option-service-pill">💡 Lighting</span>
+            <span class="option-service-pill">🔒 Security</span>
+            <span class="option-service-pill">📡 Streaming</span>
+          </div>
+          <div class="option-card-services" id="standard-pills-teatro" style="display:none;">
+            <span class="option-service-pill">🎭 Stage</span>
+            <span class="option-service-pill">💡 Lighting</span>
+            <span class="option-service-pill">🔒 Security</span>
+          </div>
+        </div>
+
+        <!-- Complete -->
+        <div class="option-card config-card"
+             onclick="selectOption(this,'id_configuracion','completa')">
+          <span class="option-card-icon">🌟</span>
+          <div class="option-card-title">Complete</div>
+          <div class="option-card-desc">All available services included, orchestrated by the Director</div>
+          <div class="option-card-services" id="complete-pills-conf"  style="display:none;">
+            <span class="option-service-pill">🎭 Stage</span>
+            <span class="option-service-pill">💡 Lighting</span>
+            <span class="option-service-pill">🔒 Security</span>
+            <span class="option-service-pill">📡 Streaming</span>
+            <span class="option-service-pill">🍽️ Catering</span>
+            <span class="option-service-pill">🎨 Decoration</span>
+          </div>
+          <div class="option-card-services" id="complete-pills-boda"  style="display:none;">
+            <span class="option-service-pill">🍽️ Catering</span>
+            <span class="option-service-pill">🎨 Decoration</span>
+            <span class="option-service-pill">💡 Lighting</span>
+            <span class="option-service-pill">🎭 Stage</span>
+            <span class="option-service-pill">🔒 Security</span>
+            <span class="option-service-pill">📡 Streaming</span>
+          </div>
+          <div class="option-card-services" id="complete-pills-concierto" style="display:none;">
+            <span class="option-service-pill">🎭 Stage</span>
+            <span class="option-service-pill">💡 Lighting</span>
+            <span class="option-service-pill">🔒 Security</span>
+            <span class="option-service-pill">📡 Streaming</span>
+            <span class="option-service-pill">🍽️ Catering</span>
+            <span class="option-service-pill">🎨 Decoration</span>
+          </div>
+          <div class="option-card-services" id="complete-pills-teatro" style="display:none;">
+            <span class="option-service-pill">🎭 Stage</span>
+            <span class="option-service-pill">💡 Lighting</span>
+            <span class="option-service-pill">🔒 Security</span>
+            <span class="option-service-pill">🍽️ Catering</span>
+            <span class="option-service-pill">🎨 Decoration</span>
+            <span class="option-service-pill">📡 Streaming</span>
+          </div>
+        </div>
+
+        <!-- Custom -->
+        <div class="option-card config-card"
+             onclick="selectOption(this,'id_configuracion','personalizada')">
+          <span class="option-card-icon">🎛️</span>
+          <div class="option-card-title">Custom</div>
+          <div class="option-card-desc">Hand-pick exactly which services you want for this event</div>
+          <div class="option-card-services" style="margin-top:.75rem;">
+            <span class="option-service-pill"
+                  style="background:rgba(255,107,157,0.1);color:#ff6b9d;border-color:rgba(255,107,157,0.3);">
+              ✏️ You choose
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Event details -->
+      <div class="form-section-title">📋 Event Details</div>
+      <div class="two-col">
+        <div class="form-group">
+          <label class="form-label">Event Name</label>
+          <input type="text" name="nombre" class="form-control"
+                 placeholder="e.g. Annual Tech Summit 2026"
+                 value="{{ form.nombre.value|default:'' }}">
+          {% if form.nombre.errors %}<p class="form-error">{{ form.nombre.errors|join:", " }}</p>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Location</label>
+          <input type="text" name="ubicacion" class="form-control"
+                 placeholder="e.g. Grand Ballroom, NYC"
+                 value="{{ form.ubicacion.value|default:'' }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Start Date &amp; Time</label>
+          <input type="datetime-local" name="fecha_inicio" class="form-control"
+                 value="{{ form.fecha_inicio.value|default:'' }}">
+          {% if form.fecha_inicio.errors %}<p class="form-error">{{ form.fecha_inicio.errors|join:", " }}</p>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label">End Date &amp; Time</label>
+          <input type="datetime-local" name="fecha_fin" class="form-control"
+                 value="{{ form.fecha_fin.value|default:'' }}">
+          {% if form.fecha_fin.errors %}<p class="form-error">{{ form.fecha_fin.errors|join:", " }}</p>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Max Attendees</label>
+          <input type="number" name="max_asistentes" class="form-control"
+                 value="{{ form.max_asistentes.value|default:'100' }}" min="1">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea name="descripcion" class="form-control" rows="3"
+                  placeholder="Brief description of the event...">{{ form.descripcion.value|default:'' }}</textarea>
+      </div>
+
+      <!-- Custom services panel -->
+      <div id="custom-services" style="display:none;">
+        <div class="form-section-title">🛠 Custom Services</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;">
+          {% for field in form %}
+            {% if field.field.widget.input_type == 'checkbox' %}
+            <div class="toggle-group">
+              <span class="toggle-label">{{ field.label }}</span>
+              <label class="toggle-switch">
+                <input type="checkbox" name="{{ field.html_name }}"
+                  {% if field.value %}checked{% endif %}>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+        <button type="button" class="btn btn-secondary" onclick="goBack()">← Back</button>
+        <button type="submit" class="btn btn-primary">🔨 Build &amp; Save Event</button>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+      </div>
+
+    </div><!-- /scratch-flow -->
+
+    <!-- ════════════════════════════════════════════════════════════
+         CLONE FLOW — Step A: Event selection grid
+    ════════════════════════════════════════════════════════════ -->
+    <div id="clone-flow" style="display:none;">
+      <div id="clone-select-panel">
+        <div class="form-section-title">🧬 Select Source Event</div>
+        <p style="color:var(--text-mid);margin-bottom:1rem;font-size:.9rem;">
+          Click on an event to use it as the base for your clone.
+        </p>
+
+        {% if all_events %}
+        <div class="clone-event-grid">
+          {% for ev in all_events %}
+          <div class="clone-event-card"
+               id="clone-src-{{ ev.pk }}"
+               onclick="selectSourceEvent({{ ev.pk }})">
+            <div class="clone-event-name">{{ ev.nombre }}</div>
+            {% if ev.tipo %}
+            <span class="badge badge-blue" style="font-size:.7rem;">{{ ev.tipo }}</span>
+            {% endif %}
+            <div class="clone-event-meta">📅 {{ ev.fecha_inicio|date:"M d, Y" }}</div>
+            {% if ev.ubicacion %}
+            <div class="clone-event-meta">📍 {{ ev.ubicacion }}</div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state" style="padding:2rem;">
+          <span class="empty-state-icon">📭</span>
+          <p class="empty-state-text">No events yet. Build one from scratch first!</p>
+        </div>
+        {% endif %}
+
+        <div style="margin-top:1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="goBack()">← Back</button>
+        </div>
+      </div>
+
+      <!-- Clone Step B: Feature configuration -->
+      <div id="clone-config-panel" style="display:none;">
+        <div class="form-section-title">🔧 Customise Your Clone</div>
+
+        <div class="clone-config-layout">
+
+          <!-- Left: source event read-only panel -->
+          <div class="clone-source-panel">
+            <div class="clone-source-header">
+              <span class="clone-source-icon">🧬</span>
+              <div>
+                <div class="clone-source-title" id="src-name">—</div>
+                <div class="clone-source-sub" id="src-type">—</div>
+              </div>
+            </div>
+            <div class="clone-source-section-label">📅 Original Dates</div>
+            <div class="clone-source-info" id="src-dates">—</div>
+            <div class="clone-source-section-label">📍 Location</div>
+            <div class="clone-source-info" id="src-location">—</div>
+            <div class="clone-source-section-label">🛠 Services Included</div>
+            <div id="src-services" class="clone-source-services"></div>
+          </div>
+
+          <!-- Right: new event details + service toggles -->
+          <div class="clone-edit-panel">
+            <div class="form-section-title" style="margin-top:0;">📋 New Event Details</div>
+            <div class="form-group">
+              <label class="form-label">Event Name</label>
+              <input type="text" id="clone-nombre" class="form-control"
+                     placeholder="Name for the new event">
+            </div>
+            <div class="two-col" style="margin-bottom:0;">
+              <div class="form-group">
+                <label class="form-label">Start Date &amp; Time</label>
+                <input type="datetime-local" id="clone-fecha-inicio" class="form-control">
+              </div>
+              <div class="form-group">
+                <label class="form-label">End Date &amp; Time</label>
+                <input type="datetime-local" id="clone-fecha-fin" class="form-control">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Max Attendees</label>
+                <input type="number" id="clone-max-asistentes" class="form-control" min="1" value="100">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Description</label>
+              <textarea id="clone-descripcion" class="form-control" rows="2"
+                        placeholder="Brief description..."></textarea>
+            </div>
+
+            <div class="form-section-title" style="margin-top:1.25rem;">🛠 Services for the Clone</div>
+            <p style="color:var(--text-mid);font-size:.85rem;margin-bottom:.75rem;">
+              Toggle services on or off for the new event.
+            </p>
+            <div class="clone-toggles-grid">
+              {% for label, icon, key in services_list %}
+              <div class="toggle-group clone-toggle-item" id="toggle-{{ key }}">
+                <span class="toggle-label">{{ icon }} {{ label }}</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" class="clone-service-cb" data-key="{{ key }}" id="cb-{{ key }}">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              {% endfor %}
+            </div>
+
+            <div class="divider"></div>
+            <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+              <button type="button" class="btn btn-secondary"
+                      onclick="showCloneSelect()">← Change Source</button>
+              <button type="button" class="btn btn-primary"
+                      onclick="submitClone()">🧬 Clone &amp; Save Event</button>
+              <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+          </div>
+
+        </div><!-- /clone-config-layout -->
+      </div><!-- /clone-config-panel -->
+    </div><!-- /clone-flow -->
 
   </form>
 </div>
 
+<!-- Hidden real form inputs for clone submission -->
+<form id="clone-submit-form" method="post" style="display:none;">
+  {% csrf_token %}
+  <input type="hidden" name="build_mode"      value="from_clone">
+  <input type="hidden" name="source_event_id" id="fs-source-event-id">
+  <input type="hidden" name="nombre"          id="fs-nombre">
+  <input type="hidden" name="fecha_inicio"    id="fs-fecha-inicio">
+  <input type="hidden" name="fecha_fin"       id="fs-fecha-fin">
+  <input type="hidden" name="max_asistentes"  id="fs-max-asistentes">
+  <input type="hidden" name="descripcion"     id="fs-descripcion">
+  <input type="hidden" name="tiene_catering"   id="fs-catering">
+  <input type="hidden" name="tiene_escenario"  id="fs-escenario">
+  <input type="hidden" name="tiene_iluminacion" id="fs-iluminacion">
+  <input type="hidden" name="tiene_seguridad"  id="fs-seguridad">
+  <input type="hidden" name="tiene_streaming"  id="fs-streaming">
+  <input type="hidden" name="tiene_decoracion" id="fs-decoracion">
+  <!-- Dummy fields required by form validation -->
+  <input type="hidden" name="tipo_builder"    value="">
+  <input type="hidden" name="configuracion"   value="">
+</form>
+
 <style>
-  .card .form-control,
-  .card input[type="text"],
-  .card input[type="number"],
-  .card input[type="datetime-local"],
-  .card select,
-  .card textarea {
-    background: #f0f4ff;
-    border: 2px solid rgba(91,94,244,0.15);
-    border-radius: 10px;
-    color: #1e1e2e;
-    font-family: 'Poppins', sans-serif;
-    font-size: .92rem;
-    padding: .65rem 1rem;
-    width: 100%;
-    box-sizing: border-box;
-    transition: all .3s ease;
-  }
-  .card input:focus,
-  .card select:focus,
-  .card textarea:focus {
-    outline: none;
-    border-color: #5b5ef4;
-    background: #fff;
-    box-shadow: 0 0 0 4px rgba(91,94,244,0.12);
-  }
+/* ── Build form controls ─────────────────────────── */
+.card .form-control,
+.card input[type="text"],
+.card input[type="number"],
+.card input[type="datetime-local"],
+.card select,
+.card textarea {
+  background: #f0f4ff;
+  border: 2px solid rgba(91,94,244,0.15);
+  border-radius: 10px;
+  color: #1e1e2e;
+  font-family: 'Poppins', sans-serif;
+  font-size: .92rem;
+  padding: .65rem 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all .3s ease;
+}
+.card input:focus,
+.card select:focus,
+.card textarea:focus {
+  outline: none;
+  border-color: #5b5ef4;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(91,94,244,0.12);
+}
 </style>
 
 <script>
+const EVENTS_DATA = {{ events_json|safe }};
+let selectedSourceId = null;
+
+/* ── Mode selection ────────────────────────────────── */
+function selectMode(el, mode) {
+  document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+
+  document.getElementById('build_mode').value = mode;
+  document.getElementById('step-mode').style.display = 'none';
+
+  if (mode === 'from_scratch') {
+    document.getElementById('scratch-flow').style.display = 'block';
+    activateSteps([1,2,3,4]);
+    document.getElementById('ind-1-label').textContent = 'Type';
+    document.getElementById('ind-2-label').textContent = 'Config';
+  } else {
+    document.getElementById('clone-flow').style.display = 'block';
+    document.getElementById('clone-select-panel').style.display = 'block';
+    document.getElementById('clone-config-panel').style.display = 'none';
+    activateSteps([1]);
+    document.getElementById('ind-1-label').textContent = 'Source';
+    document.getElementById('ind-2-label').textContent = 'Services';
+  }
+}
+
+function goBack() {
+  document.getElementById('scratch-flow').style.display = 'none';
+  document.getElementById('clone-flow').style.display   = 'none';
+  document.getElementById('step-mode').style.display    = 'block';
+  document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+  deactivateSteps([1,2,3,4]);
+}
+
+function activateSteps(nums) {
+  nums.forEach(n => document.getElementById('ind-' + n)?.classList.add('active'));
+}
+function deactivateSteps(nums) {
+  nums.forEach(n => document.getElementById('ind-' + n)?.classList.remove('active'));
+}
+
+/* ── Scratch flow: option selection ────────────────── */
 let currentType = '';
 
 function selectOption(el, fieldId, value) {
@@ -261,39 +509,134 @@ function selectOption(el, fieldId, value) {
     currentType = value;
     updateServicePills();
   }
-
   if (fieldId === 'id_configuracion') {
     document.getElementById('custom-services').style.display =
       value === 'personalizada' ? 'block' : 'none';
+    activateSteps([2,3,4]);
     updateServicePills();
   }
 }
 
 function updateServicePills() {
-  ['standard-pills-conf', 'standard-pills-boda',
-   'complete-pills-conf', 'complete-pills-boda']
-    .forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.style.display = 'none';
-    });
+  ['standard-pills-conf','standard-pills-boda','standard-pills-concierto','standard-pills-teatro',
+   'complete-pills-conf','complete-pills-boda','complete-pills-concierto','complete-pills-teatro']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
 
   const configSel = document.getElementById('id_configuracion');
   if (!configSel) return;
   const configVal = configSel.value;
 
+  const typeKey = currentType; // conferencia | boda | concierto | teatro
+  const shortMap = { conferencia:'conf', boda:'boda', concierto:'concierto', teatro:'teatro' };
+  const short = shortMap[typeKey];
+  if (!short) return;
+
   if (configVal === 'estandar') {
-    const id = currentType === 'conferencia'
-      ? 'standard-pills-conf'
-      : 'standard-pills-boda';
-    const el = document.getElementById(id);
+    const el = document.getElementById('standard-pills-' + short);
     if (el) el.style.display = 'flex';
   } else if (configVal === 'completa') {
-    const id = currentType === 'conferencia'
-      ? 'complete-pills-conf'
-      : 'complete-pills-boda';
-    const el = document.getElementById(id);
+    const el = document.getElementById('complete-pills-' + short);
     if (el) el.style.display = 'flex';
   }
+}
+
+/* ── Clone flow ─────────────────────────────────────── */
+function selectSourceEvent(id) {
+  document.querySelectorAll('.clone-event-card').forEach(c => c.classList.remove('selected'));
+  const card = document.getElementById('clone-src-' + id);
+  if (card) card.classList.add('selected');
+
+  selectedSourceId = id;
+  const ev = EVENTS_DATA.find(e => e.id === id);
+  if (!ev) return;
+
+  // Populate read-only panel
+  document.getElementById('src-name').textContent     = ev.nombre;
+  document.getElementById('src-type').textContent     = ev.tipo;
+  document.getElementById('src-dates').textContent    = ev.fecha_inicio;
+  document.getElementById('src-location').textContent = ev.ubicacion || 'Not specified';
+
+  // Services badges
+  const servicesEl = document.getElementById('src-services');
+  const labels = {
+    tiene_catering:    {icon:'🍽️', label:'Catering'},
+    tiene_escenario:   {icon:'🎭', label:'Stage'},
+    tiene_iluminacion: {icon:'💡', label:'Lighting'},
+    tiene_seguridad:   {icon:'🔒', label:'Security'},
+    tiene_streaming:   {icon:'📡', label:'Streaming'},
+    tiene_decoracion:  {icon:'🎨', label:'Decoration'},
+  };
+  servicesEl.innerHTML = '';
+  let hasAny = false;
+  for (const [key, meta] of Object.entries(labels)) {
+    if (ev.config[key]) {
+      hasAny = true;
+      const span = document.createElement('span');
+      span.className = 'clone-service-badge';
+      span.textContent = meta.icon + ' ' + meta.label;
+      servicesEl.appendChild(span);
+    }
+  }
+  if (!hasAny) {
+    servicesEl.innerHTML = '<span style="color:var(--text-soft);font-size:.85rem;">No services configured</span>';
+  }
+
+  // Pre-fill toggles with source config
+  for (const [key] of Object.entries(labels)) {
+    const cb = document.getElementById('cb-' + key.replace('tiene_',''));
+    if (cb) cb.checked = !!ev.config[key];
+  }
+
+  // Pre-fill name
+  document.getElementById('clone-nombre').value = 'Copy of ' + ev.nombre;
+
+  // Show config panel
+  document.getElementById('clone-select-panel').style.display  = 'none';
+  document.getElementById('clone-config-panel').style.display  = 'block';
+  activateSteps([2,3,4]);
+}
+
+function showCloneSelect() {
+  document.getElementById('clone-select-panel').style.display  = 'block';
+  document.getElementById('clone-config-panel').style.display  = 'none';
+  deactivateSteps([2,3,4]);
+}
+
+function submitClone() {
+  const nombre       = document.getElementById('clone-nombre').value.trim();
+  const fechaInicio  = document.getElementById('clone-fecha-inicio').value;
+  const fechaFin     = document.getElementById('clone-fecha-fin').value;
+  const maxAsist     = document.getElementById('clone-max-asistentes').value;
+  const descripcion  = document.getElementById('clone-descripcion').value;
+
+  if (!selectedSourceId) { alert('Please select a source event first.'); return; }
+  if (!nombre)            { alert('Please enter a name for the new event.'); return; }
+  if (!fechaInicio)       { alert('Please enter a start date.'); return; }
+  if (!fechaFin)          { alert('Please enter an end date.'); return; }
+
+  // Map checkbox IDs to form field names
+  document.getElementById('fs-source-event-id').value  = selectedSourceId;
+  document.getElementById('fs-nombre').value           = nombre;
+  document.getElementById('fs-fecha-inicio').value     = fechaInicio;
+  document.getElementById('fs-fecha-fin').value        = fechaFin;
+  document.getElementById('fs-max-asistentes').value   = maxAsist;
+  document.getElementById('fs-descripcion').value      = descripcion;
+
+  // Service checkboxes → on = '1', off = ''
+  const keyMap = {
+    catering:    'fs-catering',
+    escenario:   'fs-escenario',
+    iluminacion: 'fs-iluminacion',
+    seguridad:   'fs-seguridad',
+    streaming:   'fs-streaming',
+    decoracion:  'fs-decoracion',
+  };
+  for (const [short, fsId] of Object.entries(keyMap)) {
+    const cb = document.getElementById('cb-' + short);
+    document.getElementById(fsId).value = (cb && cb.checked) ? 'on' : '';
+  }
+
+  document.getElementById('clone-submit-form').submit();
 }
 </script>
 
