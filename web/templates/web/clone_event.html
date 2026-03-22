@@ -1,13 +1,13 @@
 {% extends 'web/base.html' %}
-{% block title %}Clone Event{% endblock %}
+{% block title %}Clonar Evento{% endblock %}
 {% block content %}
 
 <div class="page-header">
   <div>
-    <div class="prototype-badge">🧬 Prototype Pattern</div>
-    <h1 class="section-title">Clone Event</h1>
+    <div class="prototype-badge">🧬 Patrón Prototype</div>
+    <h1 class="section-title">Clonar Evento</h1>
     <p class="section-subtitle">
-      A deep copy of the original event will be created. The original will not be modified.
+      Se creará una copia profunda del evento original. El original no será modificado.
     </p>
   </div>
 </div>
@@ -16,7 +16,7 @@
   <!-- Original event info -->
   <div>
     <div class="original-card">
-      <div class="original-card-label">🔒 Original Event (read-only)</div>
+      <div class="original-card-label">🔒 Evento Original (solo lectura)</div>
       <h2 class="original-card-title">{{ original.nombre }}</h2>
       {% if original.tipo %}
       <span class="badge badge-blue">{{ original.tipo }}</span>
@@ -27,7 +27,7 @@
         {% if original.ubicacion %}
         <div class="event-meta-item">📍 {{ original.ubicacion }}</div>
         {% endif %}
-        <div class="event-meta-item">👥 {{ original.max_asistentes }} max attendees</div>
+        <div class="event-meta-item">👥 {{ original.max_asistentes }} máximo de asistentes</div>
         <div class="event-meta-item">👤 {{ original.organizador.username }}</div>
       </div>
     </div>
@@ -36,16 +36,16 @@
     <div class="card" style="margin-top:1rem;border-color:rgba(16,185,129,0.2);">
       <h4 style="font-size:.85rem;color:var(--green);margin-bottom:.75rem;
                  text-transform:uppercase;letter-spacing:.5px;">
-        Services included in clone
+        Servicios incluidos en el clon
       </h4>
       {% with c=original.configuracion %}
       <div style="display:flex;flex-wrap:wrap;gap:.4rem;">
         {% if c.tiene_catering   %}<span class="badge badge-green">🍽️ Catering</span>{% endif %}
-        {% if c.tiene_escenario  %}<span class="badge badge-green">🎭 Stage</span>{% endif %}
-        {% if c.tiene_iluminacion %}<span class="badge badge-green">💡 Lighting</span>{% endif %}
-        {% if c.tiene_seguridad  %}<span class="badge badge-green">🔒 Security</span>{% endif %}
-        {% if c.tiene_streaming  %}<span class="badge badge-green">📡 Streaming</span>{% endif %}
-        {% if c.tiene_decoracion %}<span class="badge badge-green">🎨 Decoration</span>{% endif %}
+        {% if c.tiene_escenario  %}<span class="badge badge-green">🎭 Escenario</span>{% endif %}
+        {% if c.tiene_iluminacion %}<span class="badge badge-green">💡 Iluminación</span>{% endif %}
+        {% if c.tiene_seguridad  %}<span class="badge badge-green">🔒 Seguridad</span>{% endif %}
+        {% if c.tiene_streaming  %}<span class="badge badge-green">📡 Transmisión</span>{% endif %}
+        {% if c.tiene_decoracion %}<span class="badge badge-green">🎨 Decoración</span>{% endif %}
       </div>
       {% endwith %}
     </div>
@@ -55,7 +55,7 @@
   <!-- Clone form -->
   <div class="card card-elevated">
     <h3 style="margin-bottom:1.5rem;font-size:1rem;color:var(--green);">
-      ✏️ Customize Your Clone
+      ✏️ Personaliza Tu Clon
     </h3>
     <form method="post">
       {% csrf_token %}
@@ -82,8 +82,8 @@
 
       <div class="divider"></div>
       <div style="display:flex;gap:1rem;">
-        <button type="submit" class="btn btn-success">🧬 Create Clone</button>
-        <a href="{% url 'event_detail' original.pk %}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-success">🧬 Crear Clon</button>
+        <a href="{% url 'event_detail' original.pk %}" class="btn btn-secondary">Cancelar</a>
       </div>
     </form>
   </div>
