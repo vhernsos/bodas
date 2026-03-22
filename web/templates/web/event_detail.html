@@ -10,7 +10,7 @@
       <span class="badge badge-blue">{{ evento.tipo }}</span>
       {% endif %}
       {% if evento.es_clon %}
-      <span class="badge badge-purple">🔁 Clone</span>
+      <span class="badge badge-purple">🔁 Clon</span>
       {% endif %}
     </div>
     <h1 class="detail-hero-title">{{ evento.nombre }}</h1>
@@ -20,7 +20,7 @@
       {% if evento.ubicacion %}
       <span class="detail-meta-item">📍 {{ evento.ubicacion }}</span>
       {% endif %}
-      <span class="detail-meta-item">👥 {{ evento.max_asistentes }} max attendees</span>
+      <span class="detail-meta-item">👥 {{ evento.max_asistentes }} máximo de asistentes</span>
       <span class="detail-meta-item">👤 {{ evento.organizador.username }}</span>
     </div>
     {% if evento.descripcion %}
@@ -30,10 +30,10 @@
     {% endif %}
   </div>
   <div class="detail-hero-actions">
-    <a href="{% url 'event_update' evento.pk %}" class="btn btn-warning btn-sm">✏️ Edit</a>
-    <a href="{% url 'clone_event'  evento.pk %}" class="btn btn-success btn-sm">🔁 Clone</a>
-    <a href="{% url 'event_delete' evento.pk %}" class="btn btn-danger btn-sm">🗑 Delete</a>
-    <a href="{% url 'dashboard' %}"              class="btn btn-secondary btn-sm">← Back</a>
+    <a href="{% url 'event_update' evento.pk %}" class="btn btn-warning btn-sm">✏️ Editar</a>
+    <a href="{% url 'clone_event'  evento.pk %}" class="btn btn-success btn-sm">🔁 Clonar</a>
+    <a href="{% url 'event_delete' evento.pk %}" class="btn btn-danger btn-sm">🗑 Eliminar</a>
+    <a href="{% url 'dashboard' %}"              class="btn btn-secondary btn-sm">← Volver</a>
   </div>
 </div>
 
@@ -41,7 +41,7 @@
   <!-- Services -->
   <div class="card card-elevated">
     <h3 style="margin-bottom:1.2rem;font-size:1rem;color:var(--purple-light);">
-      ⚙ Services Configuration
+      ⚙ Configuración de Servicios
     </h3>
     {% if evento.configuracion %}
     {% with c=evento.configuracion %}
@@ -50,30 +50,30 @@
         <span class="chip-icon">🍽️</span>Catering
       </div>
       <div class="service-chip {% if c.tiene_escenario %}active{% else %}inactive{% endif %}">
-        <span class="chip-icon">🎭</span>Stage
+        <span class="chip-icon">🎭</span>Escenario
       </div>
       <div class="service-chip {% if c.tiene_iluminacion %}active{% else %}inactive{% endif %}">
-        <span class="chip-icon">💡</span>Lighting
+        <span class="chip-icon">💡</span>Iluminación
       </div>
       <div class="service-chip {% if c.tiene_seguridad %}active{% else %}inactive{% endif %}">
-        <span class="chip-icon">🔒</span>Security
+        <span class="chip-icon">🔒</span>Seguridad
       </div>
       <div class="service-chip {% if c.tiene_streaming %}active{% else %}inactive{% endif %}">
-        <span class="chip-icon">📡</span>Streaming
+        <span class="chip-icon">📡</span>Transmisión
       </div>
       <div class="service-chip {% if c.tiene_decoracion %}active{% else %}inactive{% endif %}">
-        <span class="chip-icon">🎨</span>Decoration
+        <span class="chip-icon">🎨</span>Decoración
       </div>
     </div>
     {% if c.notas_adicionales %}
     <div class="divider"></div>
     <p style="font-size:.85rem;color:var(--gray-400);">
-      <strong style="color:var(--gray-200);">Notes:</strong> {{ c.notas_adicionales }}
+      <strong style="color:var(--gray-200);">Notas:</strong> {{ c.notas_adicionales }}
     </p>
     {% endif %}
     {% endwith %}
     {% else %}
-    <p style="color:var(--gray-600);font-size:.9rem;">No configuration available.</p>
+    <p style="color:var(--gray-600);font-size:.9rem;">Sin configuración disponible.</p>
     {% endif %}
   </div>
 
@@ -81,7 +81,7 @@
   {% if evento.servicios.all %}
   <div class="card card-elevated">
     <h3 style="margin-bottom:1.2rem;font-size:1rem;color:var(--purple-light);">
-      🛠 Contracted Services
+      🛠 Servicios Contratados
     </h3>
     <div style="display:flex;flex-direction:column;gap:.6rem;">
       {% for s in evento.servicios.all %}
@@ -107,7 +107,7 @@
   {% if evento.clones.all %}
   <div class="card card-elevated">
     <h3 style="margin-bottom:1.2rem;font-size:1rem;color:var(--purple-light);">
-      🔁 Clones of This Event
+      🔁 Clones de Este Evento
     </h3>
     <div class="timeline">
       {% for c in evento.clones.all %}
@@ -128,10 +128,10 @@
   <div class="card" style="background:rgba(245,158,11,0.07);
        border-color:rgba(245,158,11,0.25);">
     <h3 style="margin-bottom:.75rem;font-size:1rem;color:var(--orange);">
-      🔗 Original Event
+      🔗 Evento Original
     </h3>
     <p style="font-size:.9rem;color:var(--gray-400);">
-      This event is a clone of
+      Este evento es un clon de
       <a href="{% url 'event_detail' evento.evento_original.pk %}"
          style="color:var(--orange);font-weight:600;">
         {{ evento.evento_original.nombre }}
@@ -143,21 +143,21 @@
 
 <!-- Singleton ribbon -->
 <div class="singleton-ribbon">
-  <span class="singleton-tag">⚙ Singleton Config</span>
+  <span class="singleton-tag">⚙ Config Singleton</span>
   <div class="singleton-item">
-    <span class="singleton-item-label">Currency</span>
+    <span class="singleton-item-label">Moneda</span>
     <span class="singleton-item-value">{{ config.get_moneda }}</span>
   </div>
   <div class="singleton-item">
-    <span class="singleton-item-label">Tax Rate</span>
+    <span class="singleton-item-label">Tasa de Impuestos</span>
     <span class="singleton-item-value">{{ config.get_porcentaje_impuestos }}%</span>
   </div>
   <div class="singleton-item">
-    <span class="singleton-item-label">Max Attendees</span>
+    <span class="singleton-item-label">Máx. Asistentes</span>
     <span class="singleton-item-value">{{ config.get_limite_asistentes }}</span>
   </div>
   <div class="singleton-item">
-    <span class="singleton-item-label">Maintenance</span>
+    <span class="singleton-item-label">Mantenimiento</span>
     <span class="singleton-item-value">
       {% if config.get_modo_mantenimiento %}🔴 ON{% else %}🟢 OFF{% endif %}
     </span>

@@ -43,19 +43,19 @@ class GlobalConfigForm(forms.ModelForm):
 
 class BuildEventoForm(forms.Form):
     MODE_CHOICES = [
-        ('from_scratch', 'Build from Scratch'),
-        ('from_clone',   'Clone from Existing'),
+        ('from_scratch', 'Construir desde Cero'),
+        ('from_clone',   'Clonar desde Existente'),
     ]
     TIPO_CHOICES = [
-        ('conferencia', 'Conference'),
-        ('boda',        'Wedding'),
-        ('concierto',   'Concert'),
-        ('teatro',      'Theatre'),
+        ('conferencia', 'Conferencia'),
+        ('boda',        'Boda'),
+        ('concierto',   'Concierto'),
+        ('teatro',      'Teatro'),
     ]
     CONFIG_CHOICES = [
-        ('estandar',    'Standard'),
-        ('completa',    'Complete'),
-        ('personalizada', 'Custom'),
+        ('estandar',    'Estándar'),
+        ('completa',    'Completo'),
+        ('personalizada', 'Personalizado'),
     ]
     build_mode      = forms.ChoiceField(choices=MODE_CHOICES, initial='from_scratch')
     source_event_id = forms.IntegerField(required=False)
@@ -85,28 +85,28 @@ class BuildEventoForm(forms.Form):
         mode = cleaned.get('build_mode')
         if mode == 'from_scratch':
             if not cleaned.get('tipo_builder'):
-                self.add_error('tipo_builder', 'Please select an event type.')
+                self.add_error('tipo_builder', 'Por favor selecciona un tipo de evento.')
             if not cleaned.get('configuracion'):
-                self.add_error('configuracion', 'Please select a configuration level.')
+                self.add_error('configuracion', 'Por favor selecciona un nivel de configuración.')
         elif mode == 'from_clone':
             if not cleaned.get('source_event_id'):
-                self.add_error('source_event_id', 'Please select a source event to clone.')
+                self.add_error('source_event_id', 'Por favor selecciona un evento fuente para clonar.')
         return cleaned
 
 
 class CloneEventoForm(forms.Form):
-    nombre       = forms.CharField(max_length=200, label="New Event Name")
+    nombre       = forms.CharField(max_length=200, label="Nombre del Nuevo Evento")
     fecha_inicio = forms.DateTimeField(
         widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-        label="New Start Date"
+        label="Nueva Fecha de Inicio"
     )
     fecha_fin = forms.DateTimeField(
         widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-        label="New End Date"
+        label="Nueva Fecha de Finalización"
     )
     descripcion = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 3}),
         required=False,
-        label="Description"
+        label="Descripción"
     )
-    max_asistentes = forms.IntegerField(min_value=1, label="Max Attendees")
+    max_asistentes = forms.IntegerField(min_value=1, label="Máximo de Asistentes")

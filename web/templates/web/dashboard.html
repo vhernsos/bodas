@@ -1,5 +1,5 @@
 {% extends 'web/base.html' %}
-{% block title %}Dashboard — EventManager{% endblock %}
+{% block title %}Panel de Control — EventManager{% endblock %}
 {% block content %}
 
 <!-- Hero -->
@@ -8,8 +8,8 @@
        alt="Events hero">
   <div class="hero-overlay"></div>
   <div class="hero-content">
-    <h1 class="hero-title">Your Events</h1>
-    <p class="hero-subtitle">Manage and build your events all in one place</p>
+    <h1 class="hero-title">Tus Eventos</h1>
+    <p class="hero-subtitle">Gestiona y construye tus eventos en un solo lugar</p>
   </div>
 </div>
 
@@ -17,26 +17,26 @@
 <div class="stats-bar">
   <div class="stat-card">
     <div class="stat-number">{{ eventos.count }}</div>
-    <div class="stat-label">Total Events</div>
+    <div class="stat-label">Eventos Totales</div>
   </div>
   <div class="stat-card">
     <div class="stat-number">{{ eventos|length }}</div>
-    <div class="stat-label">Showing Now</div>
+    <div class="stat-label">Mostrando Ahora</div>
   </div>
   <div class="stat-card">
     <div class="stat-number">{{ tipos.count }}</div>
-    <div class="stat-label">Event Types</div>
+    <div class="stat-label">Tipos de Eventos</div>
   </div>
 </div>
 
 <!-- Page header -->
 <div class="page-header">
   <div>
-    <h2 class="section-title">All Events</h2>
-    <p class="section-subtitle">Filter, view and manage your event portfolio</p>
+    <h2 class="section-title">Todos los Eventos</h2>
+    <p class="section-subtitle">Filtra, visualiza y gestiona tu cartera de eventos</p>
   </div>
   <div class="page-header-actions">
-    <a href="{% url 'build_event' %}" class="btn btn-primary">🔨 Build Event</a>
+    <a href="{% url 'build_event' %}" class="btn btn-primary">🔨 Construir Evento</a>
   </div>
 </div>
 
@@ -44,9 +44,9 @@
 <div class="filter-bar">
   <form method="get" style="display:contents;">
     <div class="filter-group">
-      <span class="filter-label">Type</span>
+      <span class="filter-label">Tipo</span>
       <select name="tipo" class="form-control" style="min-width:140px;">
-        <option value="">All types</option>
+        <option value="">Todos los tipos</option>
         {% for t in tipos %}
         <option value="{{ t.pk }}"
           {% if request.GET.tipo == t.pk|stringformat:"s" %}selected{% endif %}>
@@ -56,15 +56,15 @@
       </select>
     </div>
     <div class="filter-group">
-      <span class="filter-label">Date</span>
+      <span class="filter-label">Fecha</span>
       <input type="date" name="fecha" class="form-control"
              value="{{ request.GET.fecha }}" style="min-width:160px;">
     </div>
     <button type="submit" class="btn btn-secondary" style="align-self:flex-end;">
-      🔍 Filter
+      🔍 Filtrar
     </button>
     <a href="{% url 'dashboard' %}" class="btn btn-secondary" style="align-self:flex-end;">
-      ✕ Clear
+      ✕ Limpiar
     </a>
   </form>
 </div>
@@ -82,7 +82,7 @@
           <span class="badge badge-blue">{{ e.tipo }}</span>
           {% endif %}
           {% if e.es_clon %}
-          <span class="badge badge-purple">🔁 Clone</span>
+          <span class="badge badge-purple">🔁 Clon</span>
           {% endif %}
         </div>
       </div>
@@ -104,8 +104,8 @@
     </div>
 
     <div class="event-card-actions">
-      <a href="{% url 'event_detail' e.pk %}"  class="btn btn-secondary btn-sm">👁 View</a>
-      <a href="{% url 'event_update' e.pk %}"  class="btn btn-warning btn-sm">✏️ Edit</a>
+      <a href="{% url 'event_detail' e.pk %}"  class="btn btn-secondary btn-sm">👁 Ver</a>
+      <a href="{% url 'event_update' e.pk %}"  class="btn btn-warning btn-sm">✏️ Editar</a>
       <a href="{% url 'event_delete' e.pk %}"  class="btn btn-danger btn-sm">🗑</a>
     </div>
   </div>
@@ -115,9 +115,9 @@
 {% else %}
 <div class="empty-state">
   <span class="empty-state-icon">📭</span>
-  <p class="empty-state-text">No events found matching your filters.</p>
+  <p class="empty-state-text">No se encontraron eventos con esos filtros.</p>
   <div style="display:flex;gap:1rem;justify-content:center;">
-    <a href="{% url 'build_event' %}"  class="btn btn-primary">Build with Builder</a>
+    <a href="{% url 'build_event' %}"  class="btn btn-primary">Construir con el Constructor</a>
   </div>
 </div>
 {% endif %}

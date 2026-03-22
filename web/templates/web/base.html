@@ -22,10 +22,10 @@
   </a>
 
   <ul class="navbar-nav">
-    <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-    <li><a href="{% url 'build_event' %}">Build</a></li>
+    <li><a href="{% url 'dashboard' %}">Panel de Control</a></li>
+    <li><a href="{% url 'build_event' %}">Construir</a></li>
     {% if user.is_staff %}
-    <li><a href="{% url 'global_config' %}">⚙ Config</a></li>
+    <li><a href="{% url 'global_config' %}">⚙ Configuración</a></li>
     {% endif %}
   </ul>
 
@@ -37,7 +37,7 @@
     <form method="post" action="{% url 'logout' %}" style="margin-left:.5rem;">
       {% csrf_token %}
       <button type="submit" class="btn btn-secondary btn-sm">
-        Logout
+        Cerrar Sesión
       </button>
     </form>
   </div>

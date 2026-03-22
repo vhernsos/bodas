@@ -68,7 +68,7 @@ def event_update(request, pk):
         if form.is_valid() and config_form.is_valid():
             form.save()
             config_form.save()
-            messages.success(request, f'Event "{evento.nombre}" updated successfully.')
+            messages.success(request, f'Evento "{evento.nombre}" actualizado exitosamente.')
             return redirect('event_detail', pk=evento.pk)
     else:
         form        = EventoForm(instance=evento)
@@ -76,7 +76,7 @@ def event_update(request, pk):
     return render(request, 'web/event_form.html', {
         'form':        form,
         'config_form': config_form,
-        'title':       'Edit Event',
+        'title':       'Editar Evento',
         'evento':      evento,
     })
 
@@ -88,7 +88,7 @@ def event_delete(request, pk):
     if request.method == 'POST':
         nombre = evento.nombre
         evento.delete()
-        messages.success(request, f'Event "{nombre}" deleted.')
+        messages.success(request, f'Evento "{nombre}" eliminado.')
         return redirect('dashboard')
     return render(request, 'web/event_confirm_delete.html', {'evento': evento})
 
@@ -155,7 +155,7 @@ def build_event(request):
                 nuevo_evento.save()
                 messages.success(
                     request,
-                    f'Event cloned successfully as "{nuevo_evento.nombre}".'
+                    f'Evento clonado exitosamente como "{nuevo_evento.nombre}".'
                 )
                 return redirect('event_detail', pk=nuevo_evento.pk)
 
@@ -232,7 +232,7 @@ def build_event(request):
                 tiene_streaming   = evento_data.tiene_streaming,
                 tiene_decoracion  = evento_data.tiene_decoracion,
             )
-            messages.success(request, f'Event "{evento.nombre}" built successfully.')
+            messages.success(request, f'Evento "{evento.nombre}" construido exitosamente.')
             return redirect('event_detail', pk=evento.pk)
     else:
         form = BuildEventoForm()
@@ -242,12 +242,12 @@ def build_event(request):
         'all_events':    all_events,
         'events_json':   json.dumps(events_json),
         'services_list': [
-            ('Catering',   '🍽️', 'catering'),
-            ('Stage',      '🎭', 'escenario'),
-            ('Lighting',   '💡', 'iluminacion'),
-            ('Security',   '🔒', 'seguridad'),
-            ('Streaming',  '📡', 'streaming'),
-            ('Decoration', '🎨', 'decoracion'),
+            ('Catering',    '🍽️', 'catering'),
+            ('Escenario',   '🎭', 'escenario'),
+            ('Iluminación', '💡', 'iluminacion'),
+            ('Seguridad',   '🔒', 'seguridad'),
+            ('Transmisión', '📡', 'streaming'),
+            ('Decoración',  '🎨', 'decoracion'),
         ],
     })
 
@@ -272,12 +272,12 @@ def clone_event(request, pk):
             nuevo_evento.save()
             messages.success(
                 request,
-                f'Event cloned successfully as "{nuevo_evento.nombre}".'
+                f'Evento clonado exitosamente como "{nuevo_evento.nombre}".'
             )
             return redirect('event_detail', pk=nuevo_evento.pk)
     else:
         form = CloneEventoForm(initial={
-            'nombre':        f"Copy of {original.nombre}",
+            'nombre':        f"Copia de {original.nombre}",
             'fecha_inicio':  original.fecha_inicio,
             'fecha_fin':     original.fecha_fin,
             'descripcion':   original.descripcion,
@@ -301,7 +301,7 @@ def global_config(request):
         if form.is_valid():
             form.save()
             singleton.refresh()
-            messages.success(request, 'Global configuration updated.')
+            messages.success(request, 'Configuración global actualizada.')
             return redirect('global_config')
     else:
         form = GlobalConfigForm(instance=db_config)
